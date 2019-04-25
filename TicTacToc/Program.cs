@@ -32,7 +32,7 @@ namespace TicTac
                 Console.Clear();
                 DrawBoard(board);
                 Console.ReadKey();
-
+                //////as
             }
             
         }
