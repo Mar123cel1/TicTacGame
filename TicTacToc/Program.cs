@@ -4,15 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TicTac
+namespace TicTacGame
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string PlayerX, PlayerO;       
-            char SymbolX = 'x';
-            char SymbolO = 'o';
+            PlayerHuman gA = new PlayerHuman();
+            PlayerComputer gB = new PlayerComputer();
+            gA.Name = "User";
+            gB.Name = "Computer";
+            gA.Symbol = 'O';
+            gB.Symbol = 'X';
+
+
             char[,] board = new char[3, 3] 
             {
                 { '1','2','3'},
@@ -20,19 +25,26 @@ namespace TicTac
                 { '7','8','9'}
             };
 
-
-            Console.WriteLine("Enter player1 name: ");
-            PlayerX = Console.ReadLine();
-            Console.WriteLine("Enter play2 name: ");
-            PlayerO = Console.ReadLine();
-
-            bool GameOver = false;
-            while (!GameOver)
+            bool gameOver = false;
+            bool movePlayerA = true;
+            while (!gameOver)
             {
                 Console.Clear();
                 DrawBoard(board);
-                Console.ReadKey();
-                //////as
+                if (movePlayerA)
+                {
+                    Console.WriteLine("Current player: " + gA.Name);
+                    gameOver = gA.MakeMove(board);
+                    movePlayerA = false;
+                }
+                else 
+                {
+                    Console.WriteLine("Current player: " + gB.Name);
+                    gameOver = gB.MakeMove(board);
+                    movePlayerA = true;
+
+                }
+                Console.ReadKey();              
             }
             
         }
@@ -52,4 +64,34 @@ namespace TicTac
         }
 
     }
+    interface IMove
+    {
+        bool MakeMove(char[,] board);
+    }
+
+    abstract class Player 
+    {
+        public string Name {get; set;}
+        public char Symbol {get; set;}
+    }
+
+    class PlayerHuman : Player, IMove 
+    {
+        public bool MakeMove (char[,] board)
+        {
+            return false;   //to corect
+        }
+    }
+
+    class PlayerComputer : Player, IMove
+    {
+        public bool MakeMove (char[,] board)
+        {
+            return false;   //to corect
+        }
+    }
+
+
+
+
 }
