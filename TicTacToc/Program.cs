@@ -24,23 +24,25 @@ namespace TicTacGame
                 { '4','5','6'},
                 { '7','8','9'}
             };
+            char[,] boardCopy = board.Clone() as char [,];
 
             bool gameOver = false;
             bool movePlayerA = true;
-            while (!gameOver)
+            for (int round = 0; round < board.Length; ++round)
             {
                 Console.Clear();
                 DrawBoard(board);
+
                 if (movePlayerA)
                 {
                     Console.WriteLine("Current player: " + gA.Name);
-                    gameOver = gA.MakeMove(board);
+                    gameOver = gA.MakeMove(board, boardCopy);
                     movePlayerA = false;
                 }
                 else 
                 {
                     Console.WriteLine("Current player: " + gB.Name);
-                    gameOver = gB.MakeMove(board);
+                    gameOver = gB.MakeMove(board, boardCopy);
                     movePlayerA = true;
 
                 }
@@ -63,31 +65,79 @@ namespace TicTacGame
 
         }
 
+
     }
     interface IMove
     {
-        bool MakeMove(char[,] board);
+        bool MakeMove(char[,] board, char[,] boardCopy);
     }
 
     abstract class Player 
     {
         public string Name {get; set;}
         public char Symbol {get; set;}
+        public bool CheckIfGameOver(char [,] board) 
+        {
+            int height = board.GetLength(0);
+            int width = board.GetLength(0);
+            if (width != height)
+                throw new Exception("The board is not a kwadrat");
+            //sprawdzenie pionowych
+            for (int i = 0; i < height; ++i) 
+            {
+                int SumOfRow = 0;
+                for (int j = 0; j < width; ++j)
+                {
+                        if (board[i, j] == Symbol)
+                            ++SumOfRow;
+                }
+                if (SumOfRow == width)
+                    return true;
+            }
+            //sprawdzenie poziomych
+            for (int j = 0; j < width; ++j)
+            {
+                int SumOfColumn = 0;
+                for (int i = 0; i < height; ++i)
+                {
+                    if (board[i, j] == Symbol)
+                        ++SumOfColumn;
+                }
+                if (SumOfColumn == height)
+                    return true;
+            }
+
+            //sprawdzenie przekatnych
+            int sumOfDiagonalA = 0;
+            int sumOfDiagonalB = 0;
+            for (int k = 0; k < width; ++k)
+            {
+                if (board[k, k] == Symbol)
+                    ++sumOfDiagonalA;
+                if (board[k, width - 1 - k] == Symbol)
+                    ++sumOfDiagonalB;
+            }
+            if (sumOfDiagonalA == width || sumOfDiagonalB == width)
+                return true;
+
+            return false;
+
+        }
     }
 
     class PlayerHuman : Player, IMove 
     {
-        public bool MakeMove (char[,] board)
+        public bool MakeMove (char[,] board, char[,] boardCopy)
         {
-            return false;   //to corect
+            return CheckIfGameOver(board);   //to corect
         }
     }
 
     class PlayerComputer : Player, IMove
     {
-        public bool MakeMove (char[,] board)
+        public bool MakeMove (char[,] board, char[,] boardCopy)
         {
-            return false;   //to corect
+            return CheckIfGameOver(board); //to corect
         }
     }
 
