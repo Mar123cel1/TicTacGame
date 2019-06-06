@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace TicTacGame
 {
@@ -11,7 +12,8 @@ namespace TicTacGame
         static void Main(string[] args)
         {
             PlayerHuman gA = new PlayerHuman();
-            PlayerComputer gB = new PlayerComputer();
+            PlayerHuman gB = new PlayerHuman();  
+            //PlayerComputer gB = new PlayerComputer();
             gA.Name = "User";
             gB.Name = "Computer";
             gA.Symbol = 'O';
@@ -46,8 +48,25 @@ namespace TicTacGame
                     movePlayerA = true;
 
                 }
-                Console.ReadKey();              
+                if (gameOver)
+                    break;
             }
+
+            Console.Clear();
+            DrawBoard(board);
+            Console.Write("Game over! ");
+            if (gameOver)
+            {
+                Console.Write("The winner is ");
+                if (movePlayerA)
+                    Console.WriteLine(gB.Name);
+                else
+                    Console.WriteLine(gA.Name);
+
+            }
+            else
+                Console.WriteLine("A tie.");
+            Console.ReadKey();
             
         }
         static void DrawBoard(char[,] board) 
@@ -60,13 +79,9 @@ namespace TicTacGame
                     Console.Write(board[i, j]);
                 Console.WriteLine();
             }
-                
-
-
         }
-
-
     }
+
     interface IMove
     {
         bool MakeMove(char[,] board, char[,] boardCopy);
@@ -123,13 +138,41 @@ namespace TicTacGame
             return false;
 
         }
+
+        public bool PlaceSymbol(char c, char[,] board, char [,] boardCopy)
+        {
+            int height = board.GetLength(0);
+            int width = board.GetLength(1);
+            if (height != boardCopy.GetLength(0) || width != boardCopy.GetLength(1))
+                throw new Exception("Board sizes don't match!");
+            for (int i = 0; i < height; ++i)
+                for (int j = 0; j < width; ++j)
+                {
+                    if ((board[i, j] == c) && (board[i, j] == boardCopy[i,j]))
+                    {
+                        board [i, j] = Symbol;
+                        return true;
+                    }
+
+                }
+            return false;
+
+        }
     }
 
     class PlayerHuman : Player, IMove 
     {
         public bool MakeMove (char[,] board, char[,] boardCopy)
         {
-            return CheckIfGameOver(board);   //to corect
+            char chosenPlace;
+            do 
+            {
+                Console.Write("choose a free space: ");
+                chosenPlace = Console.ReadKey().KeyChar;
+                Console.WriteLine();
+            }
+            while (!PlaceSymbol(chosenPlace, board, boardCopy));
+            return CheckIfGameOver(board);   
         }
     }
 
@@ -137,11 +180,21 @@ namespace TicTacGame
     {
         public bool MakeMove (char[,] board, char[,] boardCopy)
         {
-            return CheckIfGameOver(board); //to corect
+            Random rnd = new Random();
+            char chosenPlace;
+            do 
+            {
+                int m = rnd.Next(1, board.Length + 1);
+                chosenPlace = m.ToString()[0];
+            }
+            while (!PlaceSymbol(chosenPlace, board, boardCopy));
+            Thread.Sleep(2000);
+
+            return CheckIfGameOver(board); 
         }
     }
 
 
 
-    //
+    
 }
